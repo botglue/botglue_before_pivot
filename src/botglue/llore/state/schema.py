@@ -46,6 +46,9 @@ class ChatMessage(BaseModel):
     role: Literal["system", "user", "assistant", "tool"] = Field(
         description="The role in the conversation"
     )
+    tool_call_id: str | None = Field(
+        default=None, description="The tool call ID if the role is 'tool'"
+    )
     content: str = Field(description="The content of the message")
     finish_reason: Literal["stop", "length", "content_filter", "null"] = Field(
         default="null", description="The reason the conversation ended"

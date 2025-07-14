@@ -108,6 +108,7 @@ class Llore:
         bot_cfg = self.bots[bot_name]
         if bot_cfg.rag is not None and len(messages) > 0 and messages[-1].role == "user":
             question = messages[-1].content
+            assert isinstance(question, str), f"Expected string, got {type(question)}"
 
             db = get_vector_collection(self.config, bot_cfg.rag.vector_db_collection)
 

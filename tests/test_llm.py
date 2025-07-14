@@ -1,5 +1,3 @@
-import pytest
-
 from botglue.llore.api import ChatResponse
 from botglue.llore.llm import response_to_chat_result
 
@@ -111,7 +109,6 @@ responses["sonnet"] = {
 }
 
 
-@pytest.mark.debug
 def test_response_to_chat_result():
     for k, resp in responses.items():
         print(f"==== {k} ====")
@@ -122,4 +119,8 @@ def test_response_to_chat_result():
         assert msg.role == "assistant"
         assert isinstance(msg.content, str)
         assert msg.content.strip().startswith("The sky appears blue ")
+        j2 = r.model_dump_json()
+        print(j2)
+        r2 = ChatResponse.model_validate_json(j2)
+        assert r == r2
     # assert False

@@ -1,4 +1,6 @@
-from typing import Any
+from datetime import datetime
+from enum import Enum
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -8,17 +10,25 @@ class Models(BaseModel):
     bots: list[str]
 
 
-class TooledMessages(BaseModel):
-    tooled_messages: list["ChatMsg"]
-    # tooled_at: datetime
-    tooled_by: str
+class Tool(BaseModel):
+    id: str
+    name: str
+    description: str
+    parameters: dict[str, Any]
+
+
+class Content(BaseModel):
+    type: Literal["text", "tool_call"]
+    value: str
+    tool_call_id: str | None = Field(default=None)
 
 
 class ChatMsg(BaseModel):
     role: str
-    content: str
-    # created: datetime | None = Field(default=None)
-    tooled: TooledMessages | None = Field(default=None)
+    content: str | list[Content]
+    created: datetime | None = Field(default=None)
+    tool_id: str | None = Field(default=None)
+    derived_from: "None | ChatMsg" = Field(default=None)
 
     def to_output_dict(self) -> dict[str, Any]:
         return {"role": self.role, "content": self.content}
@@ -39,3 +49,42 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     generation: ChatMsg
+
+
+class RequestType(Enum):
+    MODELS = "models"
+    CHAT = "chat"
+
+    @property
+    def request_type(self) -> type[BaseModel] | None:
+        if self == RequestType.MODELS:
+            return None
+        elif self == RequestType.CHAT:
+            return ChatRequest
+        return None
+
+    @property
+    def response_type(self) -> type[BaseModel]:
+        if self == RequestType.MODELS:
+            return Models
+        elif self == RequestType.CHAT:
+            return ChatResponse
+        raise ValueError(f"Unknown request type: {self}")
+
+
+class RequestEnvelope(BaseModel):
+    request_type: RequestType
+    auth_token: str
+    request: ChatRequest | None = Field(default=None)
+
+    def validate_request(self):
+        assert self.request_type.request_type is not None and isinstance(
+            self.request, self.request_type.request_type
+        )
+
+    def validate_response(self, response: Any):
+        assert isinstance(response, self.request_type.response_type)
+
+
+class ResponseEnvelope(BaseModel):
+    response: Models | ChatResponse

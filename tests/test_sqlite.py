@@ -56,7 +56,6 @@ def search_caplog(
                 yield m[len(prefix) :]
 
 
-@pytest.mark.debug
 def test_sqlite_db(caplog: pytest.LogCaptureFixture):
     caplog.set_level(logging.DEBUG)
     create_schema(test_db_path)
@@ -66,7 +65,7 @@ def test_sqlite_db(caplog: pytest.LogCaptureFixture):
         "CREATE TABLE RagSource (source_id INTEGER PRIMARY KEY, absolute_path TEXT)",
         "CREATE TABLE RagAction (action_id INTEGER PRIMARY KEY, source_id INTEGER REFERENCES RagSource(source_id), timestamp TEXT, n_chunks INTEGER, error TEXT NULL, sha256 TEXT)",
         "CREATE TABLE RagActionCollection (action_id INTEGER REFERENCES RagAction(action_id), action TEXT, collection TEXT, timestamp TEXT)",
-        "CREATE TABLE ConvoMessage (role TEXT, content TEXT, finish_reason TEXT, message_id INTEGER PRIMARY KEY, session_id INTEGER REFERENCES ConvoSession(session_id), captured TEXT)",
+        "CREATE TABLE ConvoMessage (role TEXT, tool_call_id TEXT NULL, content TEXT, finish_reason TEXT, message_id INTEGER PRIMARY KEY, session_id INTEGER REFERENCES ConvoSession(session_id), captured TEXT)",
         "CREATE TABLE ConvoSession (session_id INTEGER PRIMARY KEY, created TEXT, updated TEXT, model TEXT, user_id TEXT NULL, session_type TEXT)",
     )
 
