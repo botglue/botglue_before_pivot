@@ -1,41 +1,20 @@
 import json
-from typing import ClassVar
 
 import pytest
-from pydantic import BaseModel, Field
-from typedtemplate import BaseTemplateEngine, JinjaTemplateEngine, TypedTemplate
 
 from botglue.llore.api import (
     RequestEnvelope,
     ResponseEnvelope,
 )
+from botglue.schema import generate_json_schema
 
 
 @pytest.mark.debug
 def test_generate_json_schema():
     """Test that RequestEnvelope generates valid JSON schema."""
 
-    class FakeClassTemplate(TypedTemplate):
-        template_engine: ClassVar[BaseTemplateEngine] = JinjaTemplateEngine(debug=True)
-        template_string: ClassVar[str | None] = """{% for t in list_of_types %}
-from {{ t.__module__}} import {{ t.__name__ }} as T_{{loop.index}}{% endfor %}
-from pydantic import BaseModel
+    schema = generate_json_schema(list_of_types=[RequestEnvelope, ResponseEnvelope])
 
-class X(BaseModel):{% for t in list_of_types %}
-    o{{loop.index}}: T_{{loop.index}}{% endfor %}
-
-
-x=X.model_json_schema()"""
-        list_of_types: list[type[BaseModel]] = Field(description="List of types")
-
-    template = FakeClassTemplate(list_of_types=[RequestEnvelope, ResponseEnvelope])
-    code = template.render()
-    context = {}
-    print(code)
-    compiled = compile(code, "<string>", "exec")
-    exec(compiled, context)
-    print(context.keys())
-    schema = context["x"]
     assert set(schema.keys()) == {"$defs", "properties", "required", "title", "type"}
     assert set(schema["$defs"].keys()) == {
         "RequestType",
