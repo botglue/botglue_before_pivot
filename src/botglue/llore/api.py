@@ -5,6 +5,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field, model_validator
 
 
+
 class Models(BaseModel):
     llms: list[str]
     bots: list[str]
@@ -29,6 +30,7 @@ class ChatMsg(BaseModel):
     created: datetime | None = Field(default=None)
     tool_id: str | None = Field(default=None)
     derived_from: "None | ChatMsg" = Field(default=None)
+    sender: Identity | None = Field(default=None, description="Identity of the message sender")
 
     def to_output_dict(self) -> dict[str, Any]:
         return {"role": self.role, "content": self.content}
@@ -38,6 +40,8 @@ class ChatRequest(BaseModel):
     bot_name: str | None = Field(default=None)
     llm_name: str | None = Field(default=None)
     messages: list[ChatMsg]
+    user: User | None = Field(default=None, description="User making the request")
+    agent: Agent | None = Field(default=None, description="Agent handling the request")
 
     @model_validator(mode="before")
     @classmethod
@@ -49,6 +53,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     generation: ChatMsg
+    agent: Agent | None = Field(default=None, description="Agent that generated the response")
 
 
 class RequestType(Enum):

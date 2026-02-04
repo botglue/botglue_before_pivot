@@ -42,7 +42,7 @@ def ensure_dir(dir: Path) -> Path:
     return dir
 
 
-def delete_file_ensure_parent_dir(test_db_path: Path | str) -> Path:
+def ensure_file_deleted_but_parent_exists(test_db_path: Path | str) -> Path:
     """make sure that db does not exist, but parent dir does"""
     test_db_path = Path(test_db_path)
     if test_db_path.exists():

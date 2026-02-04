@@ -36,7 +36,7 @@ init_session_state()
 
 # Sidebar for configuration
 with st.sidebar:
-    bot_name = st.selectbox("Bot", options=[None, *st.session_state.models.bots])
+    bot_name = st.selectbox("Bots", options=[None, *st.session_state.models.bots])
     llm_name = st.selectbox("LLM", options=[None, *st.session_state.models.llms])
     if st.button("Clear Chat"):
         st.session_state.messages = []

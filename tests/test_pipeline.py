@@ -9,9 +9,9 @@ from botglue.llore.config import Config
 from botglue.llore.pipeline import FileState, Llore
 from botglue.llore.state import query_db
 from botglue.llore.vector import gen_matching_snapshots, get_vector_collection
-from botglue.misc import delete_file_ensure_parent_dir
+from botglue.misc import ensure_file_deleted_but_parent_exist
 
-state_db = delete_file_ensure_parent_dir("data/state/state.db")
+state_db = ensure_file_deleted_but_parent_exist("data/state/state.db")
 
 srcs = ("Crypto101_fragment.pdf", "Crypto101.pdf", "DuckDB_In_Action_Final_MotherDuck.pdf")
 

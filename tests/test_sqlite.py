@@ -17,7 +17,7 @@ from botglue.llore.state.schema import (
     create_schema,
     select_all_active_sources,
 )
-from botglue.misc import delete_file_ensure_parent_dir
+from botglue.misc import ensure_file_deleted_but_parent_exist
 
 
 def test_type_info():
@@ -43,7 +43,7 @@ def test_dll():
 
 
 # test db cleanup
-test_db_path = delete_file_ensure_parent_dir(Path("build/tests/test.db"))
+test_db_path = ensure_file_deleted_but_parent_exist(Path("build/tests/test.db"))
 
 
 def search_caplog(
