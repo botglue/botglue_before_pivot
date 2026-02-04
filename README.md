@@ -1,4 +1,6 @@
-# botglue
+# botglue 
+
+Attention: Botglue repo before pivot. PYPI packages will not be supported, and they will be archived soon.
  
 [![CI](https://github.com/walnutgeek/botglue/actions/workflows/ci.yml/badge.svg)](https://github.com/walnutgeek/botglue/actions/workflows/ci.yml)
 
